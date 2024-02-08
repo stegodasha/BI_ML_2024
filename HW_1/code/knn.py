@@ -56,13 +56,12 @@ class KNNClassifier:
         """
 
         num_test_samples, num_features = X.shape
-        num_train_samples, _ = self.X_train.shape
+        num_train_samples, _ = self.train_X.shape
         distances = np.zeros((num_test_samples, num_train_samples))
 
         for i in range(num_test_samples):
             for j in range(num_train_samples):
-                distances[i, j] = np.sum(np.abs(X[i] - self.X_train[j]))
-
+                distances[i, j] = np.sum(np.abs(X[i] - self.train_X[j]))
         return distances
         
     
@@ -79,13 +78,13 @@ class KNNClassifier:
         distances, np array (num_test_samples, num_train_samples) - array
            with distances between each test and each train sample
         """
-
-        num_test_samples, num_features = X.shape
-        num_train_samples, _ = self.X_train.shape
+        
+        num_test_samples, _ = X.shape
+        num_train_samples, _ = self.train_X.shape
         distances = np.zeros((num_test_samples, num_train_samples))
 
         for i in range(num_test_samples):
-            distances[i, :] = np.sum(np.abs(X[i] - self.X_train), axis=1)
+            distances[i, :] = np.sum(np.abs(X[i] - self.train_X), axis=1)
 
         return distances
 
@@ -102,8 +101,14 @@ class KNNClassifier:
         distances, np array (num_test_samples, num_train_samples) - array
            with distances between each test and each train sample
         """
-
         
+
+        num_test_samples, _ = X.shape
+        num_train_samples, _ = self.train_X.shape
+        distances = np.zeros((num_test_samples, num_train_samples))
+        distances = np.sum(np.abs(X[:, np.newaxis] - self.train_X), axis=2)
+        return distances
+            
 
 
     def predict_labels_binary(self, distances):
@@ -121,11 +126,12 @@ class KNNClassifier:
         n_train = distances.shape[1]
         n_test = distances.shape[0]
         prediction = np.zeros(n_test)
+        for i in range(n_test):
+            closest_index = np.argmin(distances[i, :])
+            prediction[i] = self.train_y[closest_index]
 
-        """
-        YOUR CODE IS HERE
-        """
-        pass
+        return prediction
+
 
 
     def predict_labels_multiclass(self, distances):
@@ -148,3 +154,4 @@ class KNNClassifier:
         YOUR CODE IS HERE
         """
         pass
+
