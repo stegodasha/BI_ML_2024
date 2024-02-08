@@ -54,12 +54,18 @@ class KNNClassifier:
         distances, np array (num_test_samples, num_train_samples) - array
            with distances between each test and each train sample
         """
-        
-        """
-        YOUR CODE IS HERE
-        """
-        pass
 
+        num_test_samples, num_features = X.shape
+        num_train_samples, _ = self.X_train.shape
+        distances = np.zeros((num_test_samples, num_train_samples))
+
+        for i in range(num_test_samples):
+            for j in range(num_train_samples):
+                distances[i, j] = np.sum(np.abs(X[i] - self.X_train[j]))
+
+        return distances
+        
+    
 
     def compute_distances_one_loop(self, X):
         """
@@ -74,10 +80,14 @@ class KNNClassifier:
            with distances between each test and each train sample
         """
 
-        """
-        YOUR CODE IS HERE
-        """
-        pass
+        num_test_samples, num_features = X.shape
+        num_train_samples, _ = self.X_train.shape
+        distances = np.zeros((num_test_samples, num_train_samples))
+
+        for i in range(num_test_samples):
+            distances[i, :] = np.sum(np.abs(X[i] - self.X_train), axis=1)
+
+        return distances
 
 
     def compute_distances_no_loops(self, X):
@@ -93,10 +103,7 @@ class KNNClassifier:
            with distances between each test and each train sample
         """
 
-        """
-        YOUR CODE IS HERE
-        """
-        pass
+        
 
 
     def predict_labels_binary(self, distances):
