@@ -16,11 +16,21 @@ def binary_classification_metrics(y_pred, y_true):
     # https://en.wikipedia.org/wiki/Precision_and_recall
     # https://en.wikipedia.org/wiki/F1_score
 
-    """
-    YOUR CODE IS HERE
-    """
-    pass
+    if len(y_pred) != len(y_true):
+        raise ValueError("Input arrays must have the same length.")
+    
+    y_pred_binary = np.round(y_pred)
 
+    TP = np.sum((y_true == 1) & (y_pred_binary == 1))
+    FP = np.sum((y_true == 0) & (y_pred_binary == 1))
+    FN = np.sum((y_true == 1) & (y_pred_binary == 0))
+
+    precision = TP / max((TP + FP), 1e-9)  
+    recall = TP / max((TP + FN), 1e-9)  
+    accuracy = np.sum(y_pred_binary == y_true) / len(y_true)
+    f1 = 2 * (precision * recall) / max((precision + recall), 1e-9)  
+
+    return precision, recall, f1, accuracy
 
 def multiclass_accuracy(y_pred, y_true):
     """
