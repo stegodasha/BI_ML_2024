@@ -6,7 +6,7 @@ class KNNClassifier:
     K-neariest-neighbor classifier using L1 loss
     """
     
-    def __init__(self, k=1):
+    def __init__(self, k):
         self.k = k
     
 
@@ -107,6 +107,7 @@ class KNNClassifier:
         num_train_samples, _ = self.train_X.shape
         distances = np.zeros((num_test_samples, num_train_samples))
         distances = np.sum(np.abs(X[:, np.newaxis] - self.train_X), axis=2)
+
         return distances
             
 
@@ -122,16 +123,15 @@ class KNNClassifier:
         pred, np array of bool (num_test_samples) - binary predictions 
            for every test sample
         """
-
-        n_train = distances.shape[1]
-        n_test = distances.shape[0]
-        prediction = np.zeros(n_test)
-        for i in range(n_test):
-            closest_index = np.argmin(distances[i, :])
-            prediction[i] = self.train_y[closest_index]
-
-        return prediction
-
+        num_test = distances.shape[0]
+        pred = np.zeros(num_test, dtype=str)
+        for i in range(num_test):
+            closest_y = []
+            distance = np.argsort(distances[i])[:self.k]
+            closest_y = self.train_y[distance]
+            pred[i] = str(np.argmax(np.bincount(closest_y.astype(int))))
+        return pred
+        
 
 
     def predict_labels_multiclass(self, distances):
@@ -146,12 +146,13 @@ class KNNClassifier:
            for every test sample
         """
 
-        n_train = distances.shape[0]
+        n_train = distances.shape[1]
         n_test = distances.shape[0]
-        prediction = np.zeros(n_test, np.int)
+        prediction = np.zeros(n_test, dtype=int) 
 
-        """
-        YOUR CODE IS HERE
-        """
-        pass
+        for i in range(n_test):
+            min_distance_indices = np.argpartition(distances[i, :], self.k)[:self.k]
+            counts = np.bincount(min_distance_indices, minlength=n_train)
+            prediction[i] = np.argmax(counts)
 
+        return prediction
